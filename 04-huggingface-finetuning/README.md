@@ -1,6 +1,35 @@
-# Hugging Face Fine-tuning
+# Hugging Face Vision Model Fine-Tuning
 
-This folder contains Hugging Face model fine-tuning examples for segmentation tasks.
+## Overview
 
-## Contents
-- `hf_segmentation.ipynb` - Fine-tuning Hugging Face segmentation models for custom tasks.
+This notebook demonstrates fine-tuning a pretrained Vision Transformer (ViT) model using the Hugging Face Transformers library on the Beans image dataset.
+
+## Workflow
+
+Dataset
+↓
+Image Preprocessing
+↓
+Pretrained Vision Transformer (ViT)
+↓
+Fine-Tuning
+↓
+Evaluation
+↓
+Prediction
+
+## Concepts Covered
+
+- Hugging Face Datasets
+- Vision Transformer (ViT)
+- Image Preprocessing
+- Fine-Tuning
+- Trainer API
+- Image Classification
+
+## Learning Outcome
+
+- Loaded image datasets using Hugging Face
+- Fine-tuned a pretrained vision model
+- Evaluated model performance
+- Generated predictions on unseen images
