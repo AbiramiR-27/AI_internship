@@ -53,12 +53,12 @@ Learned the fundamentals of image segmentation workflows, mask generation, image
 
 ## Progress Status
 
-* [x] PyTorch Basics
-* [x] Object Segmentation Fundamentals
-* [ ] SAM 
-* [ ] MODNet
-* [ ] BiRefNet
-* [ ] Hugging Face Training and Fine-Tuning
+- [x] PyTorch Basics
+- [x] Object Segmentation Fundamentals
+- [x] SAM / SAM2 Concepts
+- [x] Hugging Face Vision Fine-Tuning
+- [x] MODNet Concepts and Workflow
+- [x] BiRefNet Concepts and Workflow
 
 ---
 
@@ -73,12 +73,3 @@ Learned the fundamentals of image segmentation workflows, mask generation, image
 * GitHub
 
 ---
-
-## Next Steps
-
-- [ ] Add SAM and SAM2 examples
-- [ ] Add MODNet examples
-- [ ] Add BiRefNet examples
-- [ ] Add Hugging Face workflows
-- [ ] Add fine-tuning examples
-- [ ] Add segmentation model demonstrations
