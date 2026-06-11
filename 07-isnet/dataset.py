@@ -1,3 +1,11 @@
+"""
+Dataset loading and preprocessing module for the IS-Net segmentation experiment.
+
+Defines the LocalSegmentationDataset class for custom local datasets and
+the get_dataloader helper function to load images and binary masks with 
+transformations (resize, normalize, binary thresholding).
+"""
+
 import os
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader

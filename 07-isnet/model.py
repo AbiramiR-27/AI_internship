@@ -1,3 +1,11 @@
+"""
+Model definition script for the IS-Net segmentation experiment.
+
+Defines the SimpleSegModel class, a lightweight Convolutional Neural Network (CNN)
+structured as an encoder-decoder architecture. Used to predict binary 
+segmentation probability masks from 3-channel (RGB) input images.
+"""
+
 import torch
 import torch.nn as nn
 

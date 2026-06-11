@@ -1,3 +1,10 @@
+"""
+Inference script for running the trained IS-Net segmentation model.
+
+Loads the saved model weights (.pth), processes input raw images, runs forward passes,
+and outputs predicted grayscale segmentation probability masks to local disk.
+"""
+
 import os
 import argparse
 import torch

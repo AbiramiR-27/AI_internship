@@ -1,3 +1,11 @@
+"""
+Training orchestration script for the IS-Net segmentation experiment.
+
+Configures hyperparameters, parses command-line arguments, validates dataset paths,
+instantiates model/optimizer, and manages the training epoch loops.
+Logs loss metrics and side-by-side image visualizations to Weights & Biases (wandb).
+"""
+
 import os
 import sys
 import argparse
