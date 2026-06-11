@@ -1,5 +1,7 @@
 # BiRefNet
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AbiramiR-27/AI_internship/blob/main/05-birefnet/birefnet.ipynb)
+
 ## Overview
 
 BiRefNet (Bilateral Reference Network) is a segmentation model designed for foreground extraction and high-quality background removal.
@@ -56,3 +58,22 @@ Background Removal
 * Understood foreground segmentation concepts
 * Explored mask generation workflows
 * Learned the role of boundary-aware segmentation models
+
+---
+
+## How to Run
+
+To run a sample inference using BiRefNet:
+
+```bash
+# Clone the repository (if you haven't already)
+git clone https://github.com/AbiramiR-27/AI_internship.git
+cd AI_internship
+
+# Install the required dependencies
+pip install -r requirements.txt
+
+# Run the inference script with the sample input
+python 05-birefnet/inference.py --input sample.jpg
+```
+
