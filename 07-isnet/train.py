@@ -151,7 +151,10 @@ def main():
         wandb.log({
             "epoch": epoch + 1,
             "loss": avg_loss,
-            "visualizations": visualizations
+            "visualizations": visualizations,
+            "input_image": wandb.Image(images[0].cpu(), caption=f"Epoch {epoch+1} - Input"),
+            "ground_truth": wandb.Image(masks[0].cpu(), caption=f"Epoch {epoch+1} - Ground Truth"),
+            "prediction": wandb.Image(outputs[0].cpu(), caption=f"Epoch {epoch+1} - Prediction")
         })
 
     # Save model weights

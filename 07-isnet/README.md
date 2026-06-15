@@ -99,3 +99,18 @@ python inference.py --image_path test.jpg --model_path isnet_model.pth --output_
 - `--model_path` (Default `isnet_model.pth`): Path to trained model weight parameters.
 - `--output_path` (Default `prediction.png`): Path where prediction mask will be saved.
 - `--no_show` (Optional flag): Disables the interactive window pop-up of the mask (`plt.show()`), useful when running on remote headless servers or scripts.
+
+---
+
+## 5. Architectural & Training Notes
+
+### Model Architecture Disclaimer
+The model defined in [model.py](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/07-isnet/model.py) (`SimpleSegModel`) is a lightweight 2-downsampling, 2-upsampling layer CNN placeholder designed to verify end-to-end code integration. It is **not** the official **IS-Net** (Highly Accurate Dichotomous Image Segmentation) architecture. The official IS-Net architecture utilizes a deeper 6-stage encoder-decoder structure with intermediate supervision (IS) blocks to capture fine boundary details.
+
+### Weights & Biases Logging
+The training script [train.py](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/07-isnet/train.py) logs both:
+1. Combined Matplotlib visualizations (under `visualizations`).
+2. Individual panels under `input_image`, `ground_truth`, and `prediction` using native `wandb.Image` objects for direct panel inspection and comparison in your W&B workspace.
+
+### Git Version Control Best Practice
+Model weight binaries (`*.pth`), local experiment logs (`wandb/`), and compiled caches (`__pycache__/`) are untracked and ignored via [.gitignore](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/.gitignore). Do not force-commit model weights to the Git repository. Use remote artifact registries (like W&B artifacts, S3, or Git LFS) for model distribution.
