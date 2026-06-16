@@ -1,6 +1,6 @@
 # ISNet Segmentation Training & Inference
 
-This directory contains the Python codebase to train and evaluate a lightweight segmentation model (Substituted/Placeholder for ISNet training experiments). The framework has been transitioned fully to standard Python scripts and includes configurable options, input validation, and interactive Weights & Biases (wandb) image logging.
+This directory contains the Python codebase to train and evaluate the official **IS-Net (DIS)** image segmentation model (from the paper *"Highly Accurate Dichotomous Image Segmentation"*). The framework has been transitioned fully to standard Python scripts and includes configurable options, input validation, and interactive Weights & Biases (wandb) image logging.
 
 ---
 
@@ -104,8 +104,8 @@ python inference.py --image_path test.jpg --model_path isnet_model.pth --output_
 
 ## 5. Architectural & Training Notes
 
-### Model Architecture Disclaimer
-The model defined in [model.py](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/07-isnet/model.py) (`SimpleSegModel`) is a lightweight 2-downsampling, 2-upsampling layer CNN placeholder designed to verify end-to-end code integration. It is **not** the official **IS-Net** (Highly Accurate Dichotomous Image Segmentation) architecture. The official IS-Net architecture utilizes a deeper 6-stage encoder-decoder structure with intermediate supervision (IS) blocks to capture fine boundary details.
+### Model Architecture Overview
+The model defined in [model.py](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/07-isnet/model.py) is the official **IS-Net (DIS)** implementation. It uses a deep 6-stage encoder-decoder structure constructed with nested Residual U-blocks (RSU-7, RSU-6, RSU-5, RSU-4, RSU-4F) and provides intermediate supervision at multiple scale resolutions to capture fine boundary and structural details.
 
 ### Weights & Biases Logging
 The training script [train.py](file:///c:/Users/HP/OneDrive/Desktop/intern/AI_internship/07-isnet/train.py) logs both:

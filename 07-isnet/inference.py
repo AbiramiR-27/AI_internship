@@ -8,11 +8,12 @@ and outputs predicted grayscale segmentation probability masks to local disk.
 import os
 import argparse
 import torch
+import numpy as np
 from PIL import Image
 from torchvision import transforms
 import matplotlib.pyplot as plt
 
-from model import SimpleSegModel
+from model import ISNetDIS
 
 def main():
     parser = argparse.ArgumentParser(description="Run inference using the trained SimpleSegModel")
@@ -30,10 +31,17 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running inference on device: {device}")
-
-    # Load model and weights
-    model = SimpleSegModel().to(device)
-    model.load_state_dict(torch.load(args.model_path, map_location=device))
+    # Load model
+    model = ISNetDIS().to(device)
+    
+    # Robust loading of model weights (supports state_dict directly or dictionary wrappers)
+    checkpoint = torch.load(args.model_path, map_location=device)
+    if isinstance(checkpoint, dict) and "model" in checkpoint:
+        model.load_state_dict(checkpoint["model"])
+    elif isinstance(checkpoint, dict) and "state_dict" in checkpoint:
+        model.load_state_dict(checkpoint["state_dict"])
+    else:
+        model.load_state_dict(checkpoint)
     model.eval()
 
     # Setup image transforms
@@ -46,21 +54,33 @@ def main():
     image = Image.open(args.image_path).convert("RGB")
     input_tensor = transform(image).unsqueeze(0).to(device)  # Add batch dimension
 
-    # Run feedforward forward pass
+    # Run forward pass (ISNetDIS outputs (preds, features))
     with torch.no_grad():
-        output = model(input_tensor)
+        preds, dfs = model(input_tensor)
+        output = preds[0]  # Extract primary high-resolution mask (d1)
 
     # Convert predicted output to grayscale segmentation mask
     mask = output.squeeze().cpu().numpy()
-
+    
     # Plot and save prediction mask
     plt.figure()
     plt.imshow(mask, cmap="gray")
     plt.title("Predicted Segmentation Mask")
     plt.axis("off")
-
     plt.savefig(args.output_path, bbox_inches="tight")
-    print(f"Prediction successfully saved as: '{args.output_path}'")
+    plt.close()
+    print(f"Binary mask successfully saved as: '{args.output_path}'")
+
+    # Generate the transparent segmented image (foreground isolated, background removed)
+    mask_pil = Image.fromarray((mask * 255).astype(np.uint8)).resize(image.size, resample=Image.BILINEAR)
+    segmented_image = image.copy()
+    segmented_image.putalpha(mask_pil)
+    
+    # Save segmented foreground image (forced to PNG to support alpha channel transparency)
+    base, ext = os.path.splitext(args.output_path)
+    segmented_path = f"{base}_segmented.png"
+    segmented_image.save(segmented_path)
+    print(f"Segmented foreground image successfully saved as: '{segmented_path}'")
 
     if not args.no_show:
         plt.show()
