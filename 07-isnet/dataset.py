@@ -111,7 +111,10 @@ def get_dataloader(dataset_path, batch_size=4, shuffle=True):
     mask_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
-        transforms.Lambda(lambda x: (x > 0.5).float())  # Map mask to binary values 0.0 or 1.0
+        # Support both standard binary masks (where max is 1.0 after ToTensor) and
+        # Oxford-IIIT Pet Dataset trimaps (where pixel values are 1, 2, 3 and max is ~0.012 after ToTensor).
+        # Class 1 is the pet foreground.
+        transforms.Lambda(lambda x: (x > 0.5).float() if x.max() > 0.05 else (torch.abs(x * 255 - 1.0) < 0.1).float())
     ])
 
     dataset = LocalSegmentationDataset(

@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from dataset import get_dataloader
-from model import SimpleSegModel
+from model import ISNetDIS
 
 def log_images_to_wandb(images, masks, outputs, epoch, num_samples=4):
     """
@@ -118,8 +118,12 @@ def main():
         print(e, file=sys.stderr)
         sys.exit(1)
 
-    model = SimpleSegModel().to(device)
-    criterion = nn.BCELoss()
+    model = ISNetDIS().to(device)
+    
+    # Track model parameter count
+    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f"Model initialized with {num_params:,} trainable parameters.")
+    
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     print(f"Starting training for {args.epochs} epochs...")
@@ -128,40 +132,43 @@ def main():
     for epoch in range(args.epochs):
         model.train()
         running_loss = 0.0
+        running_loss0 = 0.0
 
         for batch_idx, (images, masks) in enumerate(loader):
             images = images.to(device)
             masks = masks.to(device)
 
             optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, masks)
+            preds, dfs = model(images)
+            loss0, loss = model.compute_loss(preds, masks)
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
+            running_loss0 += loss0.item()
 
         avg_loss = running_loss / len(loader)
-        print(f"Epoch {epoch + 1}/{args.epochs} | Loss: {avg_loss:.4f}")
+        avg_loss0 = running_loss0 / len(loader)
+        print(f"Epoch {epoch + 1}/{args.epochs} | Total Loss: {avg_loss:.4f} | Loss0 (d1): {avg_loss0:.4f}")
 
-        # Create visualizations of original, ground truth, and prediction masks
-        visualizations = log_images_to_wandb(images, masks, outputs, epoch=epoch+1)
+        # Create visualizations of original, ground truth, and prediction masks using primary prediction preds[0]
+        visualizations = log_images_to_wandb(images, masks, preds[0], epoch=epoch+1)
 
         # Log metrics and visualizations to wandb
         wandb.log({
             "epoch": epoch + 1,
             "loss": avg_loss,
+            "loss0": avg_loss0,
             "visualizations": visualizations,
             "input_image": wandb.Image(images[0].cpu(), caption=f"Epoch {epoch+1} - Input"),
             "ground_truth": wandb.Image(masks[0].cpu(), caption=f"Epoch {epoch+1} - Ground Truth"),
-            "prediction": wandb.Image(outputs[0].cpu(), caption=f"Epoch {epoch+1} - Prediction")
+            "prediction": wandb.Image(preds[0][0].cpu(), caption=f"Epoch {epoch+1} - Prediction")
         })
 
     # Save model weights
     save_path = "isnet_model.pth"
     torch.save(model.state_dict(), save_path)
     print(f"Model successfully saved to '{save_path}'")
-
     wandb.finish()
 
 if __name__ == "__main__":
