@@ -87,7 +87,10 @@ def main():
 
         wandb.log({
             "epoch": epoch + 1,
-            "loss": avg_loss
+            "loss": avg_loss,
+            "Original Image":wandb.Image(images[0].cpu()),
+            "Ground Truth":wandb.Image(masks[0].cpu()),
+            "Prediction":wandb.Image(preds[0][0].detach().cpu())
         })
 
     torch.save(
