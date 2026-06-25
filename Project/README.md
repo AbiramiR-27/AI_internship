@@ -7,9 +7,10 @@ This directory contains the final production-ready system for the **IS-Net (Inte
 ## 📌 Table of Contents
 1. [Codebase Overview](#-codebase-overview)
 2. [Environment Setup](#-environment-setup)
-3. [Running the FastAPI Server](#-running-the-fastapi-server)
-4. [Dataset Preparation & Custom Training](#-dataset-preparation--custom-training)
-5. [Local Inference Script](#-local-inference-script)
+3. [Training Details](#-training-details)
+4. [Running the FastAPI Server](#-running-the-fastapi-server)
+5. [Dataset Preparation & Custom Training](#-dataset-preparation--custom-training)
+6. [Local Inference Script](#-local-inference-script)
 ---
 
 ## 📂 Codebase Overview
@@ -51,6 +52,35 @@ pip install -r requirements.txt
 
 ---
 
+## Training Details
+
+Training Type:
+- Trained from scratch
+
+Dataset:
+- DIS-5K 
+
+Hardware:
+- GPU: NVIDIA GeForce RTX 4050 Laptop GPU
+
+Training Hyperparameters:
+- Epochs: 100
+- Optimizer: Adam
+- Learning Rate: 1e-4
+- Batch Size: 2
+- Image Size: 512 × 512
+
+Training Duration:
+- Approx 7 hours 20 minutes
+
+Training Results:
+- Initial Loss: ~2.218
+- Final Loss: ~0.385
+
+Observation:
+- The loss decreased consistently throughout training, indicating stable convergence of the ISNet model on the DIS-5K dataset.
+
+---
 ## 🌐 Running the FastAPI Server
 
 Start the ASGI web server using **Uvicorn**:
@@ -85,6 +115,11 @@ Once the server is running, navigate to:
     *   `file` (Binary File): Upload the image you want to segment.
 *   **Response**: A raw binary image stream (`image/png`) containing the extracted mask matching the original image dimensions.
 
+**Input:**
+- JPG / JPEG / PNG image
+
+**Output:**
+- PNG segmentation mask
 ---
 
 ## 📊 Dataset Preparation & Custom Training
