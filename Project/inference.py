@@ -1,5 +1,8 @@
+import argparse
 
 import torch
+
+import numpy as np
 
 from PIL import Image
 
@@ -7,59 +10,58 @@ from torchvision import transforms
 
 from model import ISNetDIS
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--image_path", required=True, help="Path to input image")
+parser.add_argument("--model_path", default="isnet_model.pth", help="Path to model weights")
+parser.add_argument("--output_path", default="predicted_mask.png", help="Path to save output mask")
+args = parser.parse_args()
 
 device = torch.device(
     "cuda" if torch.cuda.is_available()
     else "cpu"
 )
 
+# Initialize and load model
 model = ISNetDIS().to(device)
 
 model.load_state_dict(
     torch.load(
-        "isnet_model.pth",
-        map_location=device
+        args.model_path,
+        map_location=device,
+        weights_only=True  
     )
 )
 
 model.eval()
 
+# Load image and keep track of original resolution
+
+image = Image.open(args.image_path).convert("RGB")
+original_size = image.size
+
+# Resize to the trained model resolution (512x512) for optimal segmentation quality
 transform = transforms.Compose([
-    transforms.Resize((1024,1024)),
+    transforms.Resize((512, 512)),
     transforms.ToTensor()
 ])
 
-image = Image.open(
-    "test(1).jpg"
-).convert("RGB")
-
-input_tensor = transform(
-    image
-).unsqueeze(0).to(device)
+input_tensor = transform(image).unsqueeze(0).to(device)
 
 with torch.no_grad():
+    preds, features = model(input_tensor)
 
-    preds, features = model(
-        input_tensor
-    )
+# Extract first prediction mask and squeeze singleton batch/channel dimensions
+mask = preds[0].squeeze().cpu().numpy()
 
-mask = preds[0]
+# Post-processing: Normalize values between 0 and 255
+mask = (mask - mask.min()) / (mask.max() - mask.min() + 1e-8)
+mask = (mask * 255).astype(np.uint8)
 
-mask = mask.squeeze().cpu().numpy()
+# Convert to PIL Image and resize back to original image size
+mask_image = Image.fromarray(mask)
+mask_image = mask_image.resize(original_size, Image.Resampling.LANCZOS)
 
-import matplotlib.pyplot as plt
+# Save the clean grayscale mask
+mask_image.save(args.output_path)
 
-plt.imshow(
-    mask,
-    cmap="gray"
-)
-
-plt.axis("off")
-
-plt.savefig(
-    "predicted_mask.png"
-)
-
-print(
-    "Saved predicted_mask.png"
-)
+print(f"Saved {args.output_path}")
